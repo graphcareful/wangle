@@ -72,6 +72,11 @@ class ServerBootstrap {
     return this;
   }
 
+  ServerBootstrap* acceptorConfig(const ServerSocketConfig& socketConfig) {
+    socketConfig_ = socketConfig;
+    return this;
+  }
+
   /*
    * BACKWARDS COMPATIBILITY - an acceptor factory can be set.  Your
    * Acceptor is responsible for managing the connection pool.
@@ -176,7 +181,7 @@ class ServerBootstrap {
 
     folly::via(acceptor_group_.get(), [&] {
       socket->attachEventBase(folly::EventBaseManager::get()->getEventBase());
-      socket->listen(socketConfig.acceptBacklog);
+      socket->listen(socketConfig_.acceptBacklog);
       socket->startAccepting();
     }).get();
 
@@ -225,7 +230,7 @@ class ServerBootstrap {
 
       try {
         auto socket = socketFactory_->newSocket(
-            address, socketConfig.acceptBacklog, reusePort, socketConfig);
+            address, socketConfig_.acceptBacklog, reusePort, socketConfig_);
         sock_lock.lock();
         new_sockets.push_back(socket);
         sock_lock.unlock();
@@ -321,8 +326,6 @@ class ServerBootstrap {
     workerFactory_->forEachWorker(f);
   }
 
-  ServerSocketConfig socketConfig;
-
   ServerBootstrap* setReusePort(bool reusePort) {
     reusePort_ = reusePort;
     return this;
@@ -344,6 +347,8 @@ class ServerBootstrap {
     std::make_shared<AsyncServerSocketFactory>()};
 
   ServerSocketConfig accConfig_;
+
+  ServerSocketConfig socketConfig_;
 
   bool reusePort_{false};
 

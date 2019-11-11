@@ -54,6 +54,8 @@ class AsyncServerSocketFactory : public ServerSocketFactory {
         ThreadSafeDestructor());
     socket->setMaxNumMessagesInQueue(
         config.maxNumPendingConnectionsPerWorker);
+    socket->setMaxAcceptAtOnce(
+        config.maxNumConnectionsToAcceptAtOnce);
     socket->setReusePortEnabled(reuse);
     if (config.enableTCPFastOpen) {
       socket->setTFOEnabled(true, config.fastOpenQueueSize);

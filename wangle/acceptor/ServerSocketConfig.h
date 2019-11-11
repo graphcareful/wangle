@@ -111,6 +111,12 @@ struct ServerSocketConfig {
   uint32_t maxNumPendingConnectionsPerWorker{1024};
 
   /**
+   * The maximum number of connection to be accepted each iteration of the
+   * event loop.
+   */
+  uint32_t maxNumConnectionsToAcceptAtOnce{30};
+
+  /**
    * The number of milliseconds a connection can be idle before we close it.
    */
   std::chrono::milliseconds connectionIdleTimeout{600000};
